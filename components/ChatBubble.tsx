@@ -1,19 +1,33 @@
+import * as Clipboard from 'expo-clipboard';
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface ChatBubbleProps {
   text: string;
   fromUser: boolean;
+  onCopy?: (msg: string) => void;
 }
 
-const ChatBubble: React.FC<ChatBubbleProps> = ({ text, fromUser }) => {
+const ChatBubble: React.FC<ChatBubbleProps> = ({ text, fromUser, onCopy }) => {
+  const handleLongPress = () => {
+    Clipboard.setStringAsync(text);
+    if (onCopy) onCopy(text);
+  };
+
   return (
     <Animated.View
       entering={FadeInUp.duration(500)}
       style={[styles.bubble, fromUser ? styles.user : styles.ai]}
     >
-      <Text style={styles.text}>{text}</Text>
+      <RectButton
+        rippleColor={fromUser ? '#a18fff33' : '#fff3'}
+        onLongPress={handleLongPress}
+        style={{ borderRadius: 18 }}
+      >
+        <Text style={styles.text}>{text}</Text>
+      </RectButton>
     </Animated.View>
   );
 };
@@ -22,7 +36,6 @@ const styles = StyleSheet.create({
   bubble: {
     maxWidth: '80%',
     borderRadius: 18,
-    padding: 14,
     marginVertical: 6,
     alignSelf: 'flex-start',
     shadowColor: '#000',
@@ -30,19 +43,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
+    overflow: 'hidden',
   },
   user: {
-    backgroundColor: '#2e2266',
+    backgroundColor: '#3a1e6e',
     alignSelf: 'flex-end',
   },
   ai: {
-    backgroundColor: '#7b5cff',
+    backgroundColor: '#8e6fff',
     alignSelf: 'flex-start',
   },
   text: {
     color: '#fff',
     fontSize: 16,
     lineHeight: 22,
+    padding: 14,
   },
 });
 
