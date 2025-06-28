@@ -1,28 +1,49 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 const MessageInput: React.FC = () => {
   const [message, setMessage] = useState('');
+  const [focused, setFocused] = useState(false);
+  const scale = useSharedValue(1);
+
+  const animatedBorder = useAnimatedStyle(() => ({
+    shadowColor: focused ? '#a18fff' : 'transparent',
+    shadowOpacity: focused ? 0.7 : 0,
+    shadowRadius: focused ? 16 : 0,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: focused ? 10 : 0,
+  }));
 
   const handleSend = () => {
-    // Placeholder for send logic
+    scale.value = withSpring(0.85, {}, () => {
+      scale.value = withSpring(1);
+    });
     setMessage('');
   };
 
+  const animatedSend = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedBorder]}>
       <TextInput
         style={styles.input}
         placeholder="Message SypherAI..."
         placeholderTextColor="#b3aaff"
         value={message}
         onChangeText={setMessage}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
       />
-      <TouchableOpacity style={styles.sendBtn} onPress={handleSend}>
-        <Ionicons name="send" size={22} color="#fff" />
-      </TouchableOpacity>
-    </View>
+      <Animated.View style={animatedSend}>
+        <TouchableOpacity style={styles.sendBtn} onPress={handleSend}>
+          <Ionicons name="send" size={22} color="#fff" />
+        </TouchableOpacity>
+      </Animated.View>
+    </Animated.View>
   );
 };
 

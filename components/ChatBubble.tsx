@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface ChatBubbleProps {
   text: string;
@@ -8,9 +9,12 @@ interface ChatBubbleProps {
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({ text, fromUser }) => {
   return (
-    <View style={[styles.bubble, fromUser ? styles.user : styles.ai]}> 
+    <Animated.View
+      entering={FadeInUp.duration(500)}
+      style={[styles.bubble, fromUser ? styles.user : styles.ai]}
+    >
       <Text style={styles.text}>{text}</Text>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -21,6 +25,11 @@ const styles = StyleSheet.create({
     padding: 14,
     marginVertical: 6,
     alignSelf: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   user: {
     backgroundColor: '#2e2266',
